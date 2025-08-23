@@ -21,7 +21,7 @@ public class Main {
         Optional<String> id = Optional.empty();
         Optional<String> format = Optional.empty();
 
-        /// //// souce code parsing arguments
+        // parsing arguments
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case ID_ARG_KEY: {
@@ -47,16 +47,7 @@ public class Main {
             }
         }
 
-        Formatter jsonFormater = data -> """ 
-                {"id": %d, "name": "%s"}""".formatted(data.id(), data.value());
-        Formatter csvFormater = data -> "%d,%s".formatted(data.id(), data.value());
-        Formatter defaultFormater = Record::toString;
-
-        Map<OutputFormat, Formatter> formatterMap = new HashMap<>();
-        formatterMap.put(null, defaultFormater);
-        formatterMap.put(OutputFormat.JSON, jsonFormater);
-        formatterMap.put(OutputFormat.CSV, csvFormater);
-
+        var formatterMap = getFormatterMap();
         DataManager dataManager = new DataManagerImpl(getDataStore());
 
         if (id.isPresent()) {
@@ -66,6 +57,19 @@ public class Main {
                 System.out.println(formatterMap.get(OutputFormat.valueOf(format.get())).format(dataManager.getDataById(data.id())));
             }
         }
+    }
+
+    private static Map<OutputFormat, Formatter> getFormatterMap() {
+        Formatter jsonFormater = data -> """ 
+                {"id": %d, "name": "%s"}""".formatted(data.id(), data.value());
+        Formatter csvFormater = data -> "%d,%s".formatted(data.id(), data.value());
+        Formatter defaultFormater = Record::toString;
+
+        Map<OutputFormat, Formatter> formatterMap = new HashMap<>();
+        formatterMap.put(null, defaultFormater);
+        formatterMap.put(OutputFormat.JSON, jsonFormater);
+        formatterMap.put(OutputFormat.CSV, csvFormater);
+        return formatterMap;
     }
 
     private static DataStore getDataStore() {
