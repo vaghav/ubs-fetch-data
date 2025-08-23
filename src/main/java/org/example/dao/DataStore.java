@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class DataStore {
 
-    private Map<Integer, String> dataMap = new HashMap<>();
+    private final Map<Integer, String> dataMap = new HashMap<>();
 
     public Data getValueById(int id) {
         return new Data(id, dataMap.get(id));
@@ -16,7 +16,7 @@ public class DataStore {
         return Map.copyOf(dataMap);
     }
 
-    public void putValue(int id, String value) {
+    public void add(int id, String value) {
         dataMap.put(id, value);
     }
 

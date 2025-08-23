@@ -7,6 +7,7 @@ import org.example.services.DataManagerImpl;
 import org.example.util.Formatter;
 import org.example.util.OutputFormat;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,9 +52,13 @@ public class Main {
         Formatter csvFormater = data -> "%d,%s".formatted(data.id(), data.value());
         Formatter defaultFormater = Record::toString;
 
-        Map<OutputFormat, Formatter> formatterMap = Map.of(null, defaultFormater, OutputFormat.JSON, jsonFormater, OutputFormat.CSV, csvFormater);
+        Map<OutputFormat, Formatter> formatterMap = new HashMap<>();
+        formatterMap.put(null, defaultFormater);
+        formatterMap.put(OutputFormat.JSON, jsonFormater);
+        formatterMap.put(OutputFormat.CSV, csvFormater);
 
-        DataManager dataManager = new DataManagerImpl(new DataStore());
+        DataManager dataManager = new DataManagerImpl(getDataStore());
+
         if (id.isPresent()) {
             System.out.println(formatterMap.get(OutputFormat.valueOf(format.get())).format(dataManager.getDataById(Integer.parseInt(id.get()))));
         } else {
@@ -61,5 +66,13 @@ public class Main {
                 System.out.println(formatterMap.get(OutputFormat.valueOf(format.get())).format(dataManager.getDataById(data.id())));
             }
         }
+    }
+
+    private static DataStore getDataStore() {
+        final var dataStore = new DataStore();
+        dataStore.add(1, "Alice");
+        dataStore.add(2, "Anna");
+        dataStore.add(3, "Arev");
+        return dataStore;
     }
 }
