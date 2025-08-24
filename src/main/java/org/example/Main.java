@@ -1,13 +1,12 @@
 package org.example;
 
-import org.example.dao.Data;
-import org.example.dao.DataStore;
+import org.example.services.Data;
+import org.example.dao.InMemoryDataStore;
 import org.example.services.DataManager;
 import org.example.services.DataManagerImpl;
 import org.example.util.Formatter;
 import org.example.util.OutputFormat;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,36 +46,29 @@ public class Main {
             }
         }
 
-        var formatterMap = getFormatterMap();
-        DataManager dataManager = new DataManagerImpl(getDataStore());
+        // Since IoC container is not used, manual dependency injection is done here.
+        DataManager dataManager = new DataManagerImpl(new InMemoryDataStore());
 
         if (id.isPresent()) {
-            System.out.println(formatterMap.get(OutputFormat.valueOf(format.get())).format(dataManager.getDataById(Integer.parseInt(id.get()))));
+            printData(format, dataManager, Integer.parseInt(id.get()));
         } else {
             for (Data data : dataManager.getAllData()) {
-                System.out.println(formatterMap.get(OutputFormat.valueOf(format.get())).format(dataManager.getDataById(data.id())));
+                printData(format, dataManager, data.id());
             }
         }
+    }
+
+    private static void printData(final Optional<String> format,
+                                  final DataManager dataManager, final int id) {
+        // The assumption is that the default format is JSON if no parameter is passed.
+        OutputFormat outputFormat = format.map(OutputFormat::valueOf).orElse(OutputFormat.JSON);
+        System.out.println(getFormatterMap().get(outputFormat).format(dataManager.getDataById(id)));
     }
 
     private static Map<OutputFormat, Formatter> getFormatterMap() {
         Formatter jsonFormater = data -> """ 
                 {"id": %d, "name": "%s"}""".formatted(data.id(), data.value());
         Formatter csvFormater = data -> "%d,%s".formatted(data.id(), data.value());
-        Formatter defaultFormater = Record::toString;
-
-        Map<OutputFormat, Formatter> formatterMap = new HashMap<>();
-        formatterMap.put(null, defaultFormater);
-        formatterMap.put(OutputFormat.JSON, jsonFormater);
-        formatterMap.put(OutputFormat.CSV, csvFormater);
-        return formatterMap;
-    }
-
-    private static DataStore getDataStore() {
-        final var dataStore = new DataStore();
-        dataStore.add(1, "Alice");
-        dataStore.add(2, "Anna");
-        dataStore.add(3, "Arev");
-        return dataStore;
+        return Map.of(OutputFormat.JSON, jsonFormater, OutputFormat.CSV, csvFormater);
     }
 }

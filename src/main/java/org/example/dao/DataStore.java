@@ -1,34 +1,11 @@
 package org.example.dao;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public class DataStore {
+public interface DataStore {
+    String getValueById(final int id);
 
-    private final Map<Integer, String> dataMap = new HashMap<>();
+    Map<Integer, String> getAll();
 
-    public Data getValueById(int id) {
-        return new Data(id, dataMap.get(id));
-    }
-
-    public Map<Integer, String> getAll() {
-        return Map.copyOf(dataMap);
-    }
-
-    public void add(int id, String value) {
-        dataMap.put(id, value);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        DataStore dataStore = (DataStore) o;
-        return Objects.equals(dataMap, dataStore.dataMap);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(dataMap);
-    }
+    void add(final int id, final String value);
 }

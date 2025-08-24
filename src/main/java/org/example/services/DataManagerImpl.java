@@ -1,6 +1,5 @@
 package org.example.services;
 
-import org.example.dao.Data;
 import org.example.dao.DataStore;
 
 import java.util.List;
@@ -21,7 +20,11 @@ public class DataManagerImpl implements DataManager {
     }
 
     @Override
-    public Data getDataById(int id) {
-        return dataStore.getValueById(id);
+    public Data getDataById(final int id) {
+        final var value = dataStore.getValueById(id);
+        if (value == null) {
+            throw new IllegalArgumentException("No data found for id: " + id);
+        }
+        return new Data(id, value);
     }
 }
