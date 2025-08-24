@@ -27,5 +27,4 @@ public class DataManagerImpl implements DataManager {
         }
         return new Data(id, value);
     }
-
 }
