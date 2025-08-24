@@ -23,6 +23,7 @@ public class DataManagerImpl implements DataManager {
     public Data getDataById(final int id) {
         final var value = dataStore.getValueById(id);
         if (value == null) {
+            // TODO: Clarify the case when value is 'null', as it's currently based on assumption.
             throw new IllegalArgumentException("No data found for id: " + id);
         }
         return new Data(id, value);

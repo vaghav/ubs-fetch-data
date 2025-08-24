@@ -6,6 +6,8 @@ import java.util.Map;
 // Disclaimer: This implementation is not thread-safe.
 public class InMemoryDataStore implements DataStore {
 
+    //TODO: Replace 'Map' data structure with 'EntityData' class for better
+    // maintainability and readability.
     private final Map<Integer, String> dataMap = new HashMap<>();
 
     @Override
